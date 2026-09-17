@@ -1,0 +1,4 @@
+import { StyleSheet, Text, View } from "react-native";
+import { colors } from "../theme";
+export default function SplashScreen() { return <View style={styles.screen}><View style={styles.logo}><Text style={styles.kanji}>先</Text></View><Text style={styles.title}>KanjiSensei</Text><Text style={styles.subtitle}>Aprenda kanji de forma inteligente</Text><Text style={styles.dots}>●  ●  ●</Text></View>; }
+const styles = StyleSheet.create({ screen: { alignItems: "center", backgroundColor: colors.primary, flex: 1, justifyContent: "center" }, logo: { alignItems: "center", backgroundColor: "rgba(255,255,255,0.15)", borderRadius: 28, height: 96, justifyContent: "center", width: 96 }, kanji: { color: colors.surface, fontSize: 56 }, title: { color: colors.surface, fontSize: 32, fontWeight: "700", marginTop: 16 }, subtitle: { color: colors.surface, fontSize: 15, marginTop: 6, opacity: .75 }, dots: { color: colors.surface, marginTop: 28 } });
