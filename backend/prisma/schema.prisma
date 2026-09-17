@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int        @id @default(autoincrement())
+  email        String     @unique
+  passwordHash String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  kanjis       UserKanji[]
+}
+
+model Kanji {
+  id          Int        @id @default(autoincrement())
+  character   String     @unique
+  meaning     String
+  onyomi      String?
+  kunyomi     String?
+  strokeCount Int?
+  jlpt        String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  users       UserKanji[]
+}
+
+model UserKanji {
+  id        Int      @id @default(autoincrement())
+  status    String   @default("not_started")
+  favorite  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    Int
+  kanjiId   Int
+
+  user  User  @relation(fields: [userId], references: [id])
+  kanji Kanji @relation(fields: [kanjiId], references: [id])
+
+  @@unique([userId, kanjiId])
+}
