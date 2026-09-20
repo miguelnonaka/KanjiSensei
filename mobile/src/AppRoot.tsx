@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, SafeAreaView, StyleSheet, Text } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { featuredKanjis } from "./data";
 import { colors } from "./theme";
@@ -13,7 +13,7 @@ import { DetailScreen, HomeScreen, ProfileScreen, ProgressScreen, SearchScreen, 
 const API_URL = "http://localhost:3000";
 const TOKEN_KEY = "kanjisensei.auth.token";
 
-export default function KanjiSenseiApp() {
+export default function AppRoot() {
   const [screen, setScreen] = useState<Screen>("splash");
   const [onboardingIndex, setOnboardingIndex] = useState(0);
   const [user, setUser] = useState<User | null>(null);
@@ -41,8 +41,7 @@ export default function KanjiSenseiApp() {
   async function loadKanjis(authToken: string) {
     const response = await fetch(`${API_URL}/api/kanjis`, { headers: { Authorization: `Bearer ${authToken}` } });
     if (!response.ok) throw new Error("Falha ao carregar kanjis");
-    const data = await response.json() as Kanji[];
-    setKanjis(data);
+    setKanjis(await response.json() as Kanji[]);
   }
 
   async function authenticate(email: string, password: string, mode: "login" | "register") {

@@ -1,4 +1,4 @@
-import KanjiSenseiApp from "./src/KanjiSenseiApp";
+import KanjiSenseiApp from "./src/AppRoot";
 
 export default function App() {
   return <KanjiSenseiApp />;
