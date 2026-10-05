@@ -29,33 +29,43 @@ O desenvolvimento do KanjiSensei está organizado em etapas, priorizando primeir
 * **Administração:** gerenciamento de kanjis, usuários e permissões.
 * **Qualidade:** segurança, desempenho, testes e preparação para publicação.
 
-### Etapas de desenvolvimento
+### Sprint 1
 
-**Etapa 1 — Fundação**
+* Configuração e arquitetura
+* Autenticação e usuários
+* Base de dados de Kanji
+* Pesquisa e consulta de Kanji
+* Reconhecimento por câmera
+* Sistema de estudo e flashcards
+* Quiz e avaliação
+* Progresso e estatísticas
+* Ordem de escrita
 
-* Estrutura do aplicativo e backend.
-* Banco de dados.
-* Cadastro, login e sessão.
-* Base inicial de kanjis.
-* Segurança e arquitetura modular.
+### Sprint 2
 
-**Etapa 2 — Núcleo de estudo**
+* Personalização do estudo
+* Notificações e metas
+* Recursos multimídia
+* Recursos offline e sincronização
+* Administração
+* Backup e restauração
 
-* Pesquisa e lista de kanjis.
-* Detalhes e ordem de escrita.
-* Reconhecimento por câmera.
-* Flashcards e repetição espaçada.
-* Quiz.
-* Histórico, favoritos e progresso.
+### Sprint 3
 
-**Etapa 3 — Expansão**
+* Reconhecimento por escrita manual
+* Quiz e estatísticas avançadas
+* Recomendações de estudo
+* Gráficos e tempo de estudo
+* Lembretes
+* Recursos de áudio
+* Gamificação
+* Recursos complementares
+* Compartilhamento
+* Relatórios
+* Exportação
+* Interface, acessibilidade e internacionalização
+* Staging
 
-* Filtros, radicais e busca por significado.
-* Metas e notificações.
-* Pronúncia.
-* Escrita manual e reconhecimento.
-* Estatísticas e gráficos.
-* Gamificação e demais recursos complementares.
 
 ### MVP
 
