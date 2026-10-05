@@ -1,0 +1,109 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "KanjiSensei Android APK release",
+			"type": "shell",
+			"command": "mobile\\android\\gradlew.bat",
+			"args": [
+				"-p",
+				"mobile\\android",
+				"assembleRelease",
+				"--console=plain",
+				"--no-daemon"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "KanjiSensei Sprint 1 verification",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/d",
+				"/c",
+				"cd /d backend && npm.cmd test && npm.cmd run build && cd /d ..\\mobile && node_modules\\.bin\\tsc.cmd --noEmit && node_modules\\.bin\\expo.cmd install --check"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
+			"label": "KanjiSensei TypeScript diagnostics",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/d",
+				"/c",
+				"cd /d mobile && node_modules\\.bin\\tsc.cmd --noEmit && cd /d ..\\backend && node_modules\\.bin\\tsc.cmd --noEmit -p tsconfig.json"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		},
+		{
+			"label": "Regenerate KanjiSensei Prisma Client",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/d",
+				"/c",
+				"cd /d backend && node_modules\\.bin\\prisma.cmd generate"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "KanjiSensei APK physical ARM64",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/d",
+				"/c",
+				"mobile\\build-apk.cmd"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "KanjiSensei USB backend dev APK",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/d",
+				"/c",
+				"set APP_VARIANT=development&& set EXPO_PUBLIC_API_URL=http://127.0.0.1:3000&& mobile\\build-apk.cmd"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "KanjiSensei Sprint 1 current APK",
+			"type": "shell",
+			"command": "cmd.exe",
+			"args": [
+				"/d",
+				"/c",
+				"set APP_VARIANT=development&& set EXPO_PUBLIC_API_URL=http://127.0.0.1:3000&& mobile\\build-apk.cmd"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Validate JLPT N5 stroke data",
+			"type": "shell",
+			"command": "node.exe",
+			"args": [
+				"C:\\Users\\migue\\AppData\\Local\\Temp\\kanji-n5-data.mjs"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "test"
+		}
+	]
+}

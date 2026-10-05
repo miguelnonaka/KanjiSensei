@@ -14,6 +14,8 @@ model User {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   kanjis       UserKanji[]
+  reviewHistory ReviewHistory[]
+  quizAttempts QuizAttempt[]
 }
 
 model Kanji {
@@ -24,15 +26,22 @@ model Kanji {
   kunyomi     String?
   strokeCount Int?
   jlpt        String?
+  examples    String?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   users       UserKanji[]
+  reviewHistory ReviewHistory[]
 }
 
 model UserKanji {
   id        Int      @id @default(autoincrement())
   status    String   @default("not_started")
   favorite  Boolean  @default(false)
+  dueAt     DateTime?
+  intervalDays Int   @default(0)
+  easeFactor Float  @default(2.5)
+  repetitions Int   @default(0)
+  lastReviewedAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   userId    Int
@@ -42,4 +51,30 @@ model UserKanji {
   kanji Kanji @relation(fields: [kanjiId], references: [id])
 
   @@unique([userId, kanjiId])
+}
+
+model ReviewHistory {
+  id         Int      @id @default(autoincrement())
+  rating     Int
+  reviewedAt DateTime @default(now())
+  dueAt      DateTime
+  userId     Int
+  kanjiId    Int
+
+  user  User  @relation(fields: [userId], references: [id])
+  kanji Kanji @relation(fields: [kanjiId], references: [id])
+
+  @@index([userId, reviewedAt])
+}
+
+model QuizAttempt {
+  id              Int      @id @default(autoincrement())
+  correctAnswers  Int
+  totalQuestions  Int
+  completedAt     DateTime @default(now())
+  userId          Int
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, completedAt])
 }

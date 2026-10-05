@@ -34,7 +34,7 @@ export default function AppRoot() {
       if (!response.ok) throw new Error("Sessão expirada");
       const data = await response.json() as { user: User };
       setToken(savedToken); setUser(data.user); await loadKanjis(savedToken); setScreen("home");
-    } catch { await SecureStore.deleteItemAsync(TOKEN_KEY); setConnectionError("Não foi possível conectar ao backend."); }
+    } catch { await SecureStore.deleteItemAsync(TOKEN_KEY); setConnectionError("Não foi possível atualizar sua conta. Seus estudos salvos neste aparelho continuam disponíveis."); }
     finally { setLoading(false); }
   }
 

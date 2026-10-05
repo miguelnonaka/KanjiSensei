@@ -10,6 +10,9 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.kanjisensei.app",
+      "versionCode": 1,
+      "permissions": ["android.permission.CAMERA"],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -20,6 +23,18 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-sqlite",
+      "expo-secure-store",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "KanjiSensei usa a câmera para reconhecer kanjis.",
+          "recordAudioAndroid": false
+        }
+      ],
+      "./plugins/withDevCleartextTraffic"
+    ]
   }
 }

@@ -1,28 +1,42 @@
-export type Kanji = {
-  id: number;
-  character: string;
-  meaning: string;
-  onyomi?: string | null;
-  kunyomi?: string | null;
-  strokeCount?: number | null;
-  jlpt: string | null;
-};
+import { Kanji } from "./types";
 
 export const featuredKanjis: Kanji[] = [
-  { id: 1, character: "日", meaning: "dia / sol", onyomi: "ニチ", kunyomi: "ひ", strokeCount: 4, jlpt: "N5" },
-  { id: 2, character: "水", meaning: "água", onyomi: "スイ", kunyomi: "みず", strokeCount: 4, jlpt: "N5" },
-  { id: 3, character: "火", meaning: "fogo", onyomi: "カ", kunyomi: "ひ", strokeCount: 4, jlpt: "N5" },
-  { id: 4, character: "学", meaning: "estudar / aprender", onyomi: "ガク", kunyomi: "まなぶ", strokeCount: 8, jlpt: "N5" },
-  { id: 5, character: "食", meaning: "comer / comida", onyomi: "ショク", kunyomi: "たべる", strokeCount: 9, jlpt: "N5" },
-  { id: 6, character: "見", meaning: "ver", onyomi: "ケン", kunyomi: "みる", strokeCount: 7, jlpt: "N5" },
-  { id: 7, character: "行", meaning: "ir", onyomi: "コウ", kunyomi: "いく", strokeCount: 6, jlpt: "N5" },
-  { id: 8, character: "木", meaning: "árvore", onyomi: "モク", kunyomi: "き", strokeCount: 4, jlpt: "N5" },
-  { id: 9, character: "山", meaning: "montanha", onyomi: "サン", kunyomi: "やま", strokeCount: 3, jlpt: "N5" },
-  { id: 10, character: "人", meaning: "pessoa", onyomi: "ジン / ニン", kunyomi: "ひと", strokeCount: 2, jlpt: "N5" },
+  { id: 1, character: "日", meaning: "dia / sol", onyomi: "ニチ", kunyomi: "ひ", strokeCount: 4, jlpt: "N5", examples: [{ word: "日本", reading: "にほん", meaning: "Japão" }, { word: "毎日", reading: "まいにち", meaning: "todos os dias" }] },
+  { id: 2, character: "水", meaning: "água", onyomi: "スイ", kunyomi: "みず", strokeCount: 4, jlpt: "N5", examples: [{ word: "水曜日", reading: "すいようび", meaning: "quarta-feira" }, { word: "水道", reading: "すいどう", meaning: "abastecimento de água" }] },
+  { id: 3, character: "火", meaning: "fogo", onyomi: "カ", kunyomi: "ひ", strokeCount: 4, jlpt: "N5", examples: [{ word: "火曜日", reading: "かようび", meaning: "terça-feira" }, { word: "花火", reading: "はなび", meaning: "fogos de artifício" }] },
+  { id: 4, character: "学", meaning: "estudar / aprender", onyomi: "ガク", kunyomi: "まなぶ", strokeCount: 8, jlpt: "N5", examples: [{ word: "学校", reading: "がっこう", meaning: "escola" }, { word: "学生", reading: "がくせい", meaning: "estudante" }] },
+  { id: 5, character: "食", meaning: "comer / comida", onyomi: "ショク", kunyomi: "たべる", strokeCount: 9, jlpt: "N5", examples: [{ word: "食べ物", reading: "たべもの", meaning: "comida" }, { word: "食事", reading: "しょくじ", meaning: "refeição" }] },
+  { id: 6, character: "見", meaning: "ver", onyomi: "ケン", kunyomi: "みる", strokeCount: 7, jlpt: "N5", examples: [{ word: "見る", reading: "みる", meaning: "ver" }, { word: "意見", reading: "いけん", meaning: "opinião" }] },
+  { id: 7, character: "行", meaning: "ir", onyomi: "コウ", kunyomi: "いく", strokeCount: 6, jlpt: "N5", examples: [{ word: "行く", reading: "いく", meaning: "ir" }, { word: "銀行", reading: "ぎんこう", meaning: "banco" }] },
+  { id: 8, character: "木", meaning: "árvore", onyomi: "モク", kunyomi: "き", strokeCount: 4, jlpt: "N5", examples: [{ word: "木曜日", reading: "もくようび", meaning: "quinta-feira" }, { word: "木材", reading: "もくざい", meaning: "madeira" }] },
+  { id: 9, character: "山", meaning: "montanha", onyomi: "サン", kunyomi: "やま", strokeCount: 3, jlpt: "N5", examples: [{ word: "火山", reading: "かざん", meaning: "vulcão" }, { word: "山道", reading: "やまみち", meaning: "trilha de montanha" }] },
+  { id: 10, character: "人", meaning: "pessoa", onyomi: "ジン / ニン", kunyomi: "ひと", strokeCount: 2, jlpt: "N5", examples: [{ word: "人間", reading: "にんげん", meaning: "ser humano" }, { word: "日本人", reading: "にほんじん", meaning: "japonês" }] },
+  { id: 11, character: "一", meaning: "um", onyomi: "イチ / イツ", kunyomi: "ひと", strokeCount: 1, jlpt: "N5", examples: [{ word: "一つ", reading: "ひとつ", meaning: "um (objeto)" }, { word: "一人", reading: "ひとり", meaning: "uma pessoa" }] },
+  { id: 12, character: "二", meaning: "dois", onyomi: "ニ", kunyomi: "ふた", strokeCount: 2, jlpt: "N5", examples: [{ word: "二つ", reading: "ふたつ", meaning: "dois (objetos)" }, { word: "二人", reading: "ふたり", meaning: "duas pessoas" }] },
+  { id: 13, character: "三", meaning: "três", onyomi: "サン", kunyomi: "みっ", strokeCount: 3, jlpt: "N5", examples: [{ word: "三つ", reading: "みっつ", meaning: "três (objetos)" }, { word: "三日", reading: "みっか", meaning: "dia três; três dias" }] },
+  { id: 14, character: "四", meaning: "quatro", onyomi: "シ", kunyomi: "よん / よ", strokeCount: 5, jlpt: "N5", examples: [{ word: "四つ", reading: "よっつ", meaning: "quatro (objetos)" }, { word: "四月", reading: "しがつ", meaning: "abril" }] },
+  { id: 15, character: "五", meaning: "cinco", onyomi: "ゴ", kunyomi: "いつ", strokeCount: 4, jlpt: "N5", examples: [{ word: "五つ", reading: "いつつ", meaning: "cinco (objetos)" }, { word: "五時", reading: "ごじ", meaning: "cinco horas" }] },
+  { id: 16, character: "六", meaning: "seis", onyomi: "ロク", kunyomi: "むっ", strokeCount: 4, jlpt: "N5", examples: [{ word: "六つ", reading: "むっつ", meaning: "seis (objetos)" }, { word: "六日", reading: "むいか", meaning: "dia seis; seis dias" }] },
+  { id: 17, character: "七", meaning: "sete", onyomi: "シチ", kunyomi: "なな", strokeCount: 2, jlpt: "N5", examples: [{ word: "七つ", reading: "ななつ", meaning: "sete (objetos)" }, { word: "七時", reading: "しちじ", meaning: "sete horas" }] },
+  { id: 18, character: "八", meaning: "oito", onyomi: "ハチ", kunyomi: "やっ", strokeCount: 2, jlpt: "N5", examples: [{ word: "八つ", reading: "やっつ", meaning: "oito (objetos)" }, { word: "八月", reading: "はちがつ", meaning: "agosto" }] },
+  { id: 19, character: "九", meaning: "nove", onyomi: "キュウ / ク", kunyomi: "ここの", strokeCount: 2, jlpt: "N5", examples: [{ word: "九つ", reading: "ここのつ", meaning: "nove (objetos)" }, { word: "九月", reading: "くがつ", meaning: "setembro" }] },
+  { id: 20, character: "十", meaning: "dez", onyomi: "ジュウ", kunyomi: "とお", strokeCount: 2, jlpt: "N5", examples: [{ word: "十", reading: "とお", meaning: "dez" }, { word: "十月", reading: "じゅうがつ", meaning: "outubro" }] },
+  { id: 21, character: "月", meaning: "lua; mês", onyomi: "ゲツ / ガツ", kunyomi: "つき", strokeCount: 4, jlpt: "N5", examples: [{ word: "月", reading: "つき", meaning: "lua" }, { word: "月曜日", reading: "げつようび", meaning: "segunda-feira" }] },
+  { id: 22, character: "川", meaning: "rio", onyomi: "セン", kunyomi: "かわ", strokeCount: 3, jlpt: "N5", examples: [{ word: "川", reading: "かわ", meaning: "rio" }, { word: "小川", reading: "おがわ", meaning: "riacho" }] },
+  { id: 23, character: "本", meaning: "livro; origem", onyomi: "ホン", kunyomi: "もと", strokeCount: 5, jlpt: "N5", examples: [{ word: "本", reading: "ほん", meaning: "livro" }, { word: "日本", reading: "にほん", meaning: "Japão" }] },
+  { id: 24, character: "中", meaning: "meio; dentro", onyomi: "チュウ", kunyomi: "なか", strokeCount: 4, jlpt: "N5", examples: [{ word: "中", reading: "なか", meaning: "dentro" }, { word: "中国", reading: "ちゅうごく", meaning: "China" }] },
+  { id: 25, character: "上", meaning: "acima", onyomi: "ジョウ", kunyomi: "うえ", strokeCount: 3, jlpt: "N5", examples: [{ word: "上", reading: "うえ", meaning: "acima" }, { word: "上手", reading: "じょうず", meaning: "habilidoso" }] },
+  { id: 26, character: "下", meaning: "abaixo", onyomi: "カ / ゲ", kunyomi: "した", strokeCount: 3, jlpt: "N5", examples: [{ word: "下", reading: "した", meaning: "abaixo" }, { word: "地下", reading: "ちか", meaning: "subsolo" }] },
+  { id: 27, character: "金", meaning: "ouro; dinheiro", onyomi: "キン", kunyomi: "かね", strokeCount: 8, jlpt: "N5", examples: [{ word: "お金", reading: "おかね", meaning: "dinheiro" }, { word: "金曜日", reading: "きんようび", meaning: "sexta-feira" }] },
+  { id: 28, character: "土", meaning: "terra; solo", onyomi: "ド / ト", kunyomi: "つち", strokeCount: 3, jlpt: "N5", examples: [{ word: "土", reading: "つち", meaning: "terra" }, { word: "土曜日", reading: "どようび", meaning: "sábado" }] },
+  { id: 29, character: "年", meaning: "ano", onyomi: "ネン", kunyomi: "とし", strokeCount: 6, jlpt: "N5", examples: [{ word: "今年", reading: "ことし", meaning: "este ano" }, { word: "来年", reading: "らいねん", meaning: "ano que vem" }] },
+  { id: 30, character: "大", meaning: "grande", onyomi: "ダイ / タイ", kunyomi: "おお", strokeCount: 3, jlpt: "N5", examples: [{ word: "大きい", reading: "おおきい", meaning: "grande" }, { word: "大学", reading: "だいがく", meaning: "universidade" }] },
+  { id: 31, character: "小", meaning: "pequeno", onyomi: "ショウ", kunyomi: "ちい", strokeCount: 3, jlpt: "N5", examples: [{ word: "小さい", reading: "ちいさい", meaning: "pequeno" }, { word: "小学校", reading: "しょうがっこう", meaning: "escola primária" }] },
+  { id: 32, character: "今", meaning: "agora", onyomi: "コン", kunyomi: "いま", strokeCount: 4, jlpt: "N5", examples: [{ word: "今", reading: "いま", meaning: "agora" }, { word: "今日", reading: "きょう", meaning: "hoje" }] },
 ];
 
 export const onboardingSlides = [
   { character: "学", title: "Aprenda no seu ritmo", text: "Organize seus estudos e acompanhe sua evolução.", color: "#B4232F" },
-  { character: "見", title: "Reconheça kanjis", text: "Use a câmera ou desenhe um kanji para identificá-lo.", color: "#263238" },
+  { character: "見", title: "Reconheça kanjis", text: "Encontre caracteres japoneses usando a câmera do seu celular.", color: "#263238" },
   { character: "覚", title: "Não esqueça o que aprendeu", text: "Revise seus kanjis utilizando repetição espaçada.", color: "#2E7DAF" },
 ];
