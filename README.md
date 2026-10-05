@@ -11,6 +11,71 @@ O projeto possui:
 - `backend/prisma/schema.prisma`: modelo do banco.
 - `backend/prisma/dev.db`: banco SQLite local, gerado pela migração.
 
+## Backlog
+
+O desenvolvimento do KanjiSensei está organizado em etapas, priorizando primeiro o núcleo funcional da aplicação e posteriormente recursos complementares.
+
+### Principais funcionalidades
+
+* **Autenticação:** cadastro, login e gerenciamento de sessão.
+* **Kanji:** catálogo, níveis JLPT, pesquisa, filtros, radicais e detalhes.
+* **Reconhecimento:** identificação de kanjis por câmera e escrita manual.
+* **Estudo:** flashcards, repetição espaçada, histórico e favoritos.
+* **Avaliação:** quizzes, dificuldades e estatísticas.
+* **Progresso:** acompanhamento de kanjis aprendidos e evolução do usuário.
+* **Personalização:** listas de estudo, metas e lembretes.
+* **Multimídia:** pronúncia e ordem de escrita.
+* **Offline e sincronização:** estudo offline e sincronização do progresso.
+* **Administração:** gerenciamento de kanjis, usuários e permissões.
+* **Qualidade:** segurança, desempenho, testes e preparação para publicação.
+
+### Etapas de desenvolvimento
+
+**Etapa 1 — Fundação**
+
+* Estrutura do aplicativo e backend.
+* Banco de dados.
+* Cadastro, login e sessão.
+* Base inicial de kanjis.
+* Segurança e arquitetura modular.
+
+**Etapa 2 — Núcleo de estudo**
+
+* Pesquisa e lista de kanjis.
+* Detalhes e ordem de escrita.
+* Reconhecimento por câmera.
+* Flashcards e repetição espaçada.
+* Quiz.
+* Histórico, favoritos e progresso.
+
+**Etapa 3 — Expansão**
+
+* Filtros, radicais e busca por significado.
+* Metas e notificações.
+* Pronúncia.
+* Escrita manual e reconhecimento.
+* Estatísticas e gráficos.
+* Gamificação e demais recursos complementares.
+
+### MVP
+
+A primeira versão funcional prioriza:
+
+1. Cadastro e login.
+2. Banco e consulta de kanjis.
+3. Pesquisa, lista e filtros por JLPT.
+4. Detalhes e ordem de escrita.
+5. Reconhecimento por câmera.
+6. Flashcards e repetição espaçada.
+7. Quiz.
+8. Histórico, favoritos e progresso.
+9. Backend e persistência de dados.
+10. Autenticação, segurança, logs e testes.
+
+As funcionalidades restantes serão implementadas posteriormente conforme a evolução do projeto. O backlog completo permanece separado para detalhamento das histórias de usuário e critérios de aceite.
+
+
+
 ## Executar o backend
 
 ```powershell
