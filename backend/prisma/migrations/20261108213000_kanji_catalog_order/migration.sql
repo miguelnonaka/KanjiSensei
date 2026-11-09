@@ -1,0 +1,1 @@
+ALTER TABLE "Kanji" ADD COLUMN "catalogOrder" INTEGER;

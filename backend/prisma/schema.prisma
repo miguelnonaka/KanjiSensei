@@ -11,11 +11,15 @@ model User {
   id           Int        @id @default(autoincrement())
   email        String     @unique
   passwordHash String
+  role         String     @default("USER")
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   kanjis       UserKanji[]
   reviewHistory ReviewHistory[]
   quizAttempts QuizAttempt[]
+  studyLists   StudyList[]
+  dailyGoal    DailyGoal?
+  backups      Backup[]
 }
 
 model Kanji {
@@ -26,17 +30,23 @@ model Kanji {
   kunyomi     String?
   strokeCount Int?
   jlpt        String?
+  radical     String?
   examples    String?
+  etymology   String?
+  mnemonic    String?
+  catalogOrder Int?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   users       UserKanji[]
   reviewHistory ReviewHistory[]
+  studyLists  StudyListItem[]
 }
 
 model UserKanji {
   id        Int      @id @default(autoincrement())
   status    String   @default("not_started")
   favorite  Boolean  @default(false)
+  difficult Boolean  @default(false)
   dueAt     DateTime?
   intervalDays Int   @default(0)
   easeFactor Float  @default(2.5)
@@ -58,6 +68,7 @@ model ReviewHistory {
   rating     Int
   reviewedAt DateTime @default(now())
   dueAt      DateTime
+  requestId  String?
   userId     Int
   kanjiId    Int
 
@@ -65,6 +76,7 @@ model ReviewHistory {
   kanji Kanji @relation(fields: [kanjiId], references: [id])
 
   @@index([userId, reviewedAt])
+  @@unique([userId, requestId])
 }
 
 model QuizAttempt {
@@ -72,9 +84,53 @@ model QuizAttempt {
   correctAnswers  Int
   totalQuestions  Int
   completedAt     DateTime @default(now())
+  requestId       String?
   userId          Int
 
   user User @relation(fields: [userId], references: [id])
 
   @@index([userId, completedAt])
+  @@unique([userId, requestId])
+}
+
+model StudyList {
+  id        Int             @id @default(autoincrement())
+  clientId  String
+  name      String
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  userId    Int
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     StudyListItem[]
+
+  @@unique([userId, clientId])
+}
+
+model StudyListItem {
+  id        Int       @id @default(autoincrement())
+  listId    Int
+  kanjiId   Int
+  list      StudyList @relation(fields: [listId], references: [id], onDelete: Cascade)
+  kanji     Kanji     @relation(fields: [kanjiId], references: [id], onDelete: Cascade)
+
+  @@unique([listId, kanjiId])
+}
+
+model DailyGoal {
+  id        Int      @id @default(autoincrement())
+  target    Int
+  unit      String   @default("KANJIS")
+  updatedAt DateTime @updatedAt
+  userId    Int      @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Backup {
+  id        Int      @id @default(autoincrement())
+  data      String
+  createdAt DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
 }
