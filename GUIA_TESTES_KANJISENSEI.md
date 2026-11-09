@@ -7,10 +7,12 @@ Este guia é para desenvolvimento e demonstração local. Ele fica fora do Git p
 O KanjiSensei é um app Android em React Native/Expo para aprender kanjis. A Sprint 1 inclui:
 
 - Conta, login e sessão pelo serviço Node/Express.
-- Catálogo local e remoto com 32 kanjis N5, busca, leituras, exemplos e ordem de traços.
+- Catálogo offline embutido com 100 kanjis N5 e catálogo remoto N1–N5 importado de `data/kanji-n1.csv` a `data/kanji-n5.csv`; a busca agrupa por nível N5→N1 e preserva a ordem dos registros CSV, com busca, leituras, exemplos disponíveis e ordem de traços.
 - Câmera com OCR japonês no próprio telefone.
 - Favoritos, status de aprendizado, flashcards, repetição espaçada, quiz, histórico e progresso.
-- SQLite no aparelho para continuar estudando sem conexão.
+- SQLite no aparelho para continuar estudando sem conexão. O app inclui 100 kanjis N5 no primeiro uso; em **Perfil → Atualizar catálogo para uso offline**, baixe os 2.383 kanjis do servidor enquanto estiver conectado.
+
+O perfil mostra quantos kanjis estão salvos no aparelho e a data da última atualização. Se o download falhar, o catálogo já guardado permanece disponível e o erro aparece no perfil. O catálogo pode ser atualizado sem login; progresso de convidado é somente local e não é sincronizado com uma conta.
 
 Não há Firebase nesta versão. O serviço de conta e sincronização é o backend Node/Prisma.
 
@@ -78,7 +80,7 @@ Execute `npx.cmd expo prebuild --platform android` no primeiro build e após mud
 3. Se alterar o seed, rode `npm.cmd run db:seed` e confirme `GET /api/kanjis`.
 4. Mobile: execute `node_modules\.bin\tsc.cmd --noEmit` e `node_modules\.bin\expo.cmd install --check` em `mobile/`.
 5. Para testar no telefone, confirme `adb devices`, refaça `adb reverse tcp:3000 tcp:3000`, defina as duas variáveis de desenvolvimento acima, compile e instale com `adb install -r`.
-6. Valide o fluxo tocado: login/cadastro; busca por kanji, leitura e JLPT; exemplos e traços; favorito/status; flashcard/quiz; atividade recente; câmera apontada a um kanji de alto contraste; modo offline com a rede desligada.
+6. Valide o fluxo tocado: login/cadastro; busca por kanji, leitura e JLPT; exemplos e traços; favorito/status; flashcard; quiz por significado, leitura e identificação do kanji em cada dificuldade disponível; atividade recente; câmera apontada a um kanji de alto contraste e seleção de imagem do dispositivo; atualizar o catálogo conectado, então desligar a rede e confirmar que os kanjis baixados e estudos locais continuam disponíveis.
 
 Para testar as rotas sem telefone, `npm.cmd test` usa a suíte Supertest em `backend/test/api.test.ts`. A API responde em `http://127.0.0.1:3000`; os endpoints de conta exigem token.
 
@@ -97,5 +99,5 @@ O script seleciona o primeiro telefone autorizado; para vários aparelhos, infor
 
 - Expo SDK 57 / React Native 0.86 define `minSdk 24`; isso não satisfaz Android API 21. Baixar esse mínimo exige trocar a versão da stack nativa e validar novamente os módulos.
 - Builds de desenvolvimento usam HTTP somente com `APP_VARIANT=development` e a ponte ADB. Para produção, publique o backend com HTTPS e defina `APP_VARIANT=production` e `EXPO_PUBLIC_API_URL` com o domínio HTTPS; o build de produção recusa HTTP.
-- O catálogo atual tem 32 kanjis N5. Outros níveis ainda precisam ser adicionados ao seed e ao catálogo embarcado.
+- O seed do backend importa os 2.383 registros dos cinco CSVs de kanji em `data/` (N1: 1.345, N2: 398, N3: 387, N4: 169, N5: 84) e preserva informações curadas adicionais e etimologias/mnemônicas cadastradas pelo admin. O app inclui 100 kanjis N5 para uso offline sem uma sincronização prévia; os CSVs de vocabulário e gramática ainda não são consumidos. Os significados dos CSVs de kanji estão em inglês e os arquivos não fornecem etimologias ou mnemônicas; esses campos podem ser preenchidos manualmente no painel administrativo.
 - Firebase não faz parte da Sprint 1 deste projeto.
