@@ -6,7 +6,7 @@ Aplicativo Android para estudo de kanjis, com app React Native/Expo, API Node.js
 
 O projeto possui:
 
-- `mobile/`: aplicativo React Native com Expo SDK 57, SQLite local e câmera com OCR japonês no dispositivo.
+- `mobile/`: aplicativo React Native com Expo SDK 57, SQLite local, OCR japonês pela câmera ou por imagem selecionada no dispositivo.
 - `backend/`: API Express em TypeScript.
 - `backend/prisma/schema.prisma`: modelo do banco.
 - `backend/prisma/dev.db`: banco SQLite local, gerado pela migração.
@@ -33,22 +33,19 @@ O desenvolvimento do KanjiSensei está organizado em etapas, priorizando primeir
 
 * Configuração e arquitetura
 * Autenticação e usuários
-* Base de dados de Kanji
+* Base de dados de Kanji JLPT N1–N5 no backend
 * Pesquisa e consulta de Kanji
 * Reconhecimento por câmera
 * Sistema de estudo e flashcards
-* Quiz e avaliação
+* Quiz básico por significado, leitura e identificação do kanji
 * Progresso e estatísticas
 * Ordem de escrita
 
 ### Sprint 2
 
-* Personalização do estudo
-* Notificações e metas
-* Recursos multimídia
-* Recursos offline e sincronização
-* Administração
-* Backup e restauração
+**Etapa 4 — Personalização:** busca por significado e radical, filtros JLPT e por traços, ordenação, kanjis difíceis com prioridade na revisão, listas de estudo, metas diárias, notificações locais de revisão e pronúncia japonesa.
+
+**Etapa 5 — Administração e sincronização:** painel administrativo protegido por papel, CRUD do catálogo e gerenciamento de permissões no backend, estudo offline, fila de sincronização idempotente, backup/restauração por arquivo e backup/restauração associado à conta.
 
 ### Sprint 3
 
@@ -102,6 +99,10 @@ API: `http://localhost:3000`
 
 Verificação: `GET /health`
 
+Para criar o primeiro administrador, configure `ADMIN_EMAILS` no `backend/.env` com o e-mail exato antes do cadastro (aceita vários e-mails separados por vírgula). O cadastro correspondente recebe o papel `ADMIN`; depois, administradores podem gerenciar permissões no painel do app.
+
+Para criar contas locais pelo seed, preencha `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`, `SEED_USER_EMAIL` e `SEED_USER_PASSWORD` em `backend/.env` antes de executar `npm.cmd run db:seed`. O seed atualiza essas duas contas em execuções posteriores, exige senhas com pelo menos 12 caracteres e recusa criar contas de seed quando `NODE_ENV=production`. Não use credenciais de desenvolvimento em produção.
+
 Kanjis: `GET /api/kanjis`
 
 Testes da API:
@@ -146,7 +147,25 @@ Requisitos de build local: Node.js/npm, JDK 17, Android SDK/platform-tools e NDK
 
 O Expo SDK 57 com React Native 0.86 gera `minSdk 24`; por isso não atende ao requisito legado Android API 21 sem trocar a stack nativa. Para produção, publique o backend e configure a URL HTTPS antes do build; o config plugin recusa `APP_VARIANT=production` sem HTTPS e mantém cleartext desativado.
 
-O catálogo inicial contém 32 kanjis JLPT N5, com exemplos e ordem de traços para consulta offline. Os caminhos de escrita adaptados de KanjiVG são licenciados CC BY-SA 3.0; veja [os créditos](mobile/assets/kanjivg-credits.md). A lista pode ser ampliada por seed/migração conforme novos níveis de estudo forem adicionados.
+## Dados do catálogo
+
+A pasta `data/` contém os arquivos de kanji usados pelo seed do backend:
+
+| Arquivo | Registros |
+|---|---:|
+| `kanji-n1.csv` | 1.345 |
+| `kanji-n2.csv` | 398 |
+| `kanji-n3.csv` | 387 |
+| `kanji-n4.csv` | 169 |
+| `kanji-n5.csv` | 84 |
+
+Ao executar `npm.cmd run db:seed` em `backend/`, os cinco arquivos alimentam o catálogo remoto com 2.383 registros. O catálogo é organizado por nível JLPT (N5, N4, N3, N2, N1) e mantém, dentro de cada nível, a ordem de frequência/listagem do CSV. O seed também preserva informações revisadas manualmente para kanjis selecionados, incluindo exemplos. Os significados fornecidos nos CSVs estão em inglês. Os CSVs de vocabulário e gramática também estão na pasta, mas ainda não são importados pelo aplicativo.
+
+O catálogo incluído diretamente no app para uso offline contém 100 kanjis N5 curados; ele é independente dos CSVs. Em **Perfil → Atualizar catálogo para uso offline**, qualquer usuário conectado pode baixar o catálogo remoto completo, que é armazenado no SQLite do aparelho para consultas posteriores sem conexão. Os CSVs não contêm etimologias nem mnemônicas; administradores podem preencher esses campos no painel, e o seed preserva os valores cadastrados.
+
+O quiz permite escolher questões de significado, leitura ou identificação do caractere, com dificuldade básica (N5/N4), intermediária (N3) ou avançada (N2/N1). A opção “Escolher kanji” é de múltipla escolha; não substitui reconhecimento de escrita manual. Etimologia e mnemônica são campos opcionais preenchidos manualmente; recomenda-se registrar uma fonte para informações etimológicas.
+
+Os caminhos de escrita adaptados de KanjiVG são licenciados CC BY-SA 3.0; veja [os créditos](mobile/assets/kanjivg-credits.md).
 
 ## Espelhar no Linux com scrcpy
 
@@ -172,7 +191,9 @@ O arquivo local `backend/prisma/dev.db` e o `.env` não devem ser enviados ao re
 
 ## Arquitetura
 
-O aplicativo mobile apresenta as telas e conversa com o backend por HTTP. O backend concentra validações, autenticação e regras de negócio. O Prisma traduz as operações da API para o banco SQLite local. Essa separação permite trocar o banco ou conectar serviços externos sem colocar credenciais e regras sensíveis dentro do aplicativo.
+O aplicativo mobile apresenta as telas e conversa com o backend por HTTP. O backend concentra validações, autenticação e regras de negócio. O Prisma traduz as operações da API para o SQLite do backend. Essa separação permite trocar o banco ou conectar serviços externos sem colocar credenciais e regras sensíveis dentro do aplicativo.
+
+O backlog não exige Firebase: a US03 pede persistência de usuários, kanjis e dados de estudo; as US46/US47 pedem operação offline e sincronização. O SQLite do aparelho deve permanecer para o modo offline. O SQLite do backend é a configuração atual do projeto; para uma implantação multi-instância, avalie migrar apenas o banco do servidor para PostgreSQL, preservando a API e o armazenamento offline.
 
 Com o backend, o fluxo autenticado é:
 
@@ -180,6 +201,8 @@ Com o backend, o fluxo autenticado é:
 React Native/Expo -> API Express -> Prisma -> SQLite
 ```
 
-Sem backend, o catálogo inicial, status de conhecimento, favoritos, revisões e histórico são guardados em SQLite no próprio Android. Cadastro/login e sincronização entre dispositivos requerem conexão com a API.
+O app inclui 100 kanjis N5 no primeiro uso. Enquanto estiver conectado, use **Perfil → Atualizar catálogo para uso offline** para baixar o catálogo remoto completo para o SQLite do aparelho; a tela mostra a quantidade salva e quando foi atualizado. Depois do download, catálogo e estudos continuam acessíveis sem internet. Cadastro/login e sincronização entre dispositivos ainda requerem conexão com a API.
+
+O progresso, quizzes, listas e metas feitos sem conexão por um perfil de conta são enfileirados no aparelho e sincronizados quando a conexão retorna. O modo convidado salva os estudos localmente, sem sincronizá-los com uma conta. O app oferece exportação/restauração de backup JSON pelo seletor/compartilhamento do Android; contas também podem guardar e restaurar snapshots no backend. Notificações locais de revisão usam o horário das 9h do aparelho.
 
 O arquivo `backend/src/app.ts` define a API para ser reutilizada pelos testes. O arquivo `backend/src/server.ts` apenas inicia a porta `3000` e encerra a conexão com o banco quando o processo termina.

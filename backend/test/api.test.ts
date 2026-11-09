@@ -94,12 +94,111 @@ test("lista de kanjis retorna dados persistidos", async () => {
 
   assert.equal(response.status, 200);
   assert.ok(Array.isArray(response.body));
-  assert.ok(response.body.length >= 32);
+  assert.ok(response.body.length >= 2383);
+  assert.deepEqual(response.body.slice(0, 3).map((kanji: { character: string }) => kanji.character), ["日", "一", "国"]);
+  assert.equal(response.body[0].jlpt, "N5");
+  assert.equal(response.body.at(-1).jlpt, "N1");
   assert.ok(response.body.some((kanji: { character: string }) => kanji.character === "日"));
+  const station = response.body.find((kanji: { character: string }) => kanji.character === "駅");
+  assert.equal(station.jlpt, "N4");
+  assert.equal(station.strokeCount, 14);
+  assert.ok(station.examples.some((example: { word: string }) => example.word === "駅前"));
+  assert.ok(response.body.some((kanji: { character: string }) => kanji.character === "右"));
   const sun = response.body.find((kanji: { character: string }) => kanji.character === "日");
   kanjiId = sun.id;
   assert.ok(Array.isArray(sun.examples));
   assert.equal(sun.examples[0]?.word, "日本");
+
+  const n1 = await request(app).get("/api/kanjis?jlpt=N1");
+  assert.equal(n1.status, 200);
+  assert.equal(n1.body.length, 1345);
+  assert.ok(n1.body.some((kanji: { character: string }) => kanji.character === "氏"));
+  assert.deepEqual(n1.body.slice(0, 3).map((kanji: { character: string }) => kanji.character), ["氏", "統", "保"]);
+  assert.deepEqual(n1.body.slice(0, 3).map((kanji: { catalogOrder: number }) => kanji.catalogOrder), [0, 1, 2]);
+
+  const n2 = await request(app).get("/api/kanjis?jlpt=N2");
+  assert.equal(n2.status, 200);
+  assert.equal(n2.body.length, 398);
+  assert.ok(n2.body.some((kanji: { character: string }) => kanji.character === "党"));
+  assert.deepEqual(n2.body.slice(0, 3).map((kanji: { character: string }) => kanji.character), ["党", "協", "総"]);
+});
+
+test("radicais e filtros por traços consultam o catálogo", async () => {
+  const radical = await request(app).get("/api/radicals");
+  assert.equal(radical.status, 200);
+  assert.ok(radical.body.includes("日"));
+
+  const filtered = await request(app).get("/api/kanjis?radical=%E6%97%A5&minStrokes=4&maxStrokes=4&sort=strokes");
+  assert.equal(filtered.status, 200);
+  assert.ok(filtered.body.some((kanji: { character: string }) => kanji.character === "日"));
+  const invalid = await request(app).get("/api/kanjis?minStrokes=9&maxStrokes=2");
+  assert.equal(invalid.status, 400);
+  const meaning = await request(app).get("/api/kanjis?meaning=sol");
+  assert.ok(meaning.body.some((kanji: { character: string }) => kanji.character === "日"));
+});
+
+test("painel e operações administrativas verificam a permissão no backend", async () => {
+  const forbidden = await request(app)
+    .get("/api/admin/kanjis")
+    .set("Authorization", `Bearer ${token}`);
+  assert.equal(forbidden.status, 403);
+
+  const managedUser = await prisma.user.create({
+    data: { email: `role-${Date.now()}@example.com`, passwordHash: "unused" },
+  });
+  await prisma.user.update({ where: { id: userId }, data: { role: "ADMIN" } });
+  try {
+    const created = await request(app)
+      .post("/api/admin/kanjis")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        character: `試${Date.now()}`,
+        meaning: "teste",
+        onyomi: "シ",
+        kunyomi: "こころみる",
+        radical: "言",
+        strokeCount: 13,
+        jlpt: "N3",
+        etymology: "Informação etimológica cadastrada manualmente.",
+        mnemonic: "Uma frase original para ajudar a lembrar o caractere.",
+        examples: [{ word: "試験", reading: "しけん", meaning: "prova" }],
+      });
+    assert.equal(created.status, 201);
+    assert.equal(created.body.etymology, "Informação etimológica cadastrada manualmente.");
+    assert.equal(created.body.mnemonic, "Uma frase original para ajudar a lembrar o caractere.");
+
+    const updated = await request(app)
+      .put(`/api/admin/kanjis/${created.body.id}`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ ...created.body, meaning: "experimento" });
+    assert.equal(updated.status, 200);
+    assert.equal(updated.body.meaning, "experimento");
+    assert.equal(updated.body.mnemonic, created.body.mnemonic);
+    const publicCatalog = await request(app).get("/api/kanjis?meaning=experimento");
+    const publicKanji = publicCatalog.body.find((kanji: { character: string }) =>
+      kanji.character === created.body.character);
+    assert.equal(publicKanji.etymology, created.body.etymology);
+    assert.equal(publicKanji.mnemonic, created.body.mnemonic);
+
+    const role = await request(app)
+      .put(`/api/admin/users/${managedUser.id}/role`)
+      .set("Authorization", `Bearer ${token}`)
+      .send({ role: "ADMIN" });
+    assert.equal(role.status, 200);
+    assert.equal(role.body.role, "ADMIN");
+    const users = await request(app)
+      .get("/api/admin/users")
+      .set("Authorization", `Bearer ${token}`);
+    assert.ok(users.body.some((user: { id: number }) => user.id === managedUser.id));
+
+    const deleted = await request(app)
+      .delete(`/api/admin/kanjis/${created.body.id}`)
+      .set("Authorization", `Bearer ${token}`);
+    assert.equal(deleted.status, 204);
+  } finally {
+    await prisma.user.update({ where: { id: userId }, data: { role: "USER" } });
+    await prisma.user.delete({ where: { id: managedUser.id } });
+  }
 });
 
 test("progresso e favoritos exigem autenticação e são persistidos", async () => {
@@ -109,10 +208,11 @@ test("progresso e favoritos exigem autenticação e são persistidos", async () 
   const saved = await request(app)
     .put(`/api/me/kanjis/${kanjiId}`)
     .set("Authorization", `Bearer ${token}`)
-    .send({ status: "learning", favorite: true });
+    .send({ status: "learning", favorite: true, difficult: true });
   assert.equal(saved.status, 200);
   assert.equal(saved.body.status, "learning");
   assert.equal(saved.body.favorite, true);
+  assert.equal(saved.body.difficult, true);
 
   const list = await request(app)
     .get("/api/me/kanjis")
@@ -173,6 +273,64 @@ test("tentativas de quiz exigem autenticação e persistem pontuação", async (
     .set("Authorization", `Bearer ${token}`);
   assert.equal(history.status, 200);
   assert.equal(history.body[0].totalQuestions, 5);
+
+  const requestId = `quiz-${Date.now()}`;
+  const syncedAttempt = await request(app)
+    .post("/api/me/quizzes")
+    .set("Authorization", `Bearer ${token}`)
+    .send({ correctAnswers: 2, totalQuestions: 3, requestId });
+  const retriedAttempt = await request(app)
+    .post("/api/me/quizzes")
+    .set("Authorization", `Bearer ${token}`)
+    .send({ correctAnswers: 2, totalQuestions: 3, requestId });
+  assert.equal(syncedAttempt.status, 201);
+  assert.equal(retriedAttempt.status, 200);
+  assert.equal(retriedAttempt.body.id, syncedAttempt.body.id);
+});
+
+test("listas, metas e backups ficam associados ao usuário", async () => {
+  const list = await request(app)
+    .put("/api/me/study-lists/revisao-n5")
+    .set("Authorization", `Bearer ${token}`)
+    .send({ name: "Revisão N5", characters: ["日", "水"] });
+  assert.equal(list.status, 200);
+  assert.deepEqual(list.body.characters.sort(), ["日", "水"]);
+
+  const lists = await request(app)
+    .get("/api/me/study-lists")
+    .set("Authorization", `Bearer ${token}`);
+  assert.equal(lists.body[0].name, "Revisão N5");
+
+  const goal = await request(app)
+    .put("/api/me/goal")
+    .set("Authorization", `Bearer ${token}`)
+    .send({ target: 5, unit: "ACTIVITIES" });
+  assert.equal(goal.status, 200);
+  assert.equal(goal.body.target, 5);
+
+  const backup = await request(app)
+    .post("/api/me/backups")
+    .set("Authorization", `Bearer ${token}`);
+  assert.equal(backup.status, 201);
+  const backups = await request(app)
+    .get("/api/me/backups")
+    .set("Authorization", `Bearer ${token}`);
+  assert.equal(backups.body[0].id, backup.body.id);
+
+  const changedGoal = await request(app)
+    .put("/api/me/goal")
+    .set("Authorization", `Bearer ${token}`)
+    .send({ target: 2, unit: "KANJIS" });
+  assert.equal(changedGoal.body.target, 2);
+  const restored = await request(app)
+    .post(`/api/me/backups/${backup.body.id}/restore`)
+    .set("Authorization", `Bearer ${token}`);
+  assert.equal(restored.status, 200);
+  const restoredGoal = await request(app)
+    .get("/api/me/goal")
+    .set("Authorization", `Bearer ${token}`);
+  assert.equal(restoredGoal.body.target, 5);
+  assert.equal(restoredGoal.body.unit, "ACTIVITIES");
 });
 
 test("lista de kanjis filtra por nível JLPT", async () => {
@@ -197,6 +355,9 @@ test("lista de kanjis rejeita nível JLPT inválido", async () => {
 
 after(async () => {
   if (userId) {
+    await prisma.backup.deleteMany({ where: { userId } });
+    await prisma.dailyGoal.deleteMany({ where: { userId } });
+    await prisma.studyList.deleteMany({ where: { userId } });
     await prisma.quizAttempt.deleteMany({ where: { userId } });
     await prisma.reviewHistory.deleteMany({ where: { userId } });
     await prisma.userKanji.deleteMany({ where: { userId } });

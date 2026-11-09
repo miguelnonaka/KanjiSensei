@@ -1,5 +1,5 @@
-export type Screen = "splash" | "onboarding" | "login" | "home" | "search" | "study" | "progress" | "profile" | "detail" | "camera";
-export type User = { id: number; email: string; isGuest?: boolean };
+export type Screen = "splash" | "onboarding" | "login" | "home" | "search" | "study" | "progress" | "profile" | "detail" | "camera" | "admin";
+export type User = { id: number; email: string; role?: "USER" | "ADMIN"; isGuest?: boolean };
 export type KanjiExample = { word: string; reading: string; meaning: string };
 export type Kanji = {
   id: number;
@@ -9,6 +9,10 @@ export type Kanji = {
   onyomi?: string | null;
   kunyomi?: string | null;
   strokeCount?: number | null;
+  radical?: string | null;
+  etymology?: string | null;
+  mnemonic?: string | null;
+  catalogOrder?: number | null;
   jlpt: string | null;
   examples?: KanjiExample[];
 };
@@ -18,6 +22,7 @@ export type KanjiProgress = {
   kanjiId: number;
   status: KnowledgeStatus;
   favorite: boolean;
+  difficult: boolean;
   dueAt: string | null;
   intervalDays: number;
   easeFactor: number;
@@ -36,4 +41,7 @@ export type QuizAttempt = {
   correctAnswers: number;
   totalQuestions: number;
   completedAt: string;
+  requestId?: string;
 };
+export type DailyGoal = { target: number; unit: "KANJIS" | "ACTIVITIES"; progress: number };
+export type StudyList = { clientId: string; name: string; characters: string[] };

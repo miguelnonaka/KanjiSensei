@@ -12,7 +12,9 @@
     "android": {
       "package": "com.kanjisensei.app",
       "versionCode": 1,
-      "permissions": ["android.permission.CAMERA"],
+      "permissions": [
+        "android.permission.CAMERA"
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -34,7 +36,15 @@
           "recordAudioAndroid": false
         }
       ],
-      "./plugins/withDevCleartextTraffic"
+      "./plugins/withDevCleartextTraffic",
+      "expo-sharing",
+      [
+        "expo-notifications",
+        {
+          "defaultChannel": "reviews",
+          "color": "#B4232F"
+        }
+      ]
     ]
   }
 }
